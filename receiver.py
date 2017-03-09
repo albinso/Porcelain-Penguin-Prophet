@@ -43,9 +43,7 @@ def interpret_ones(code):
 def main():
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(RECEIVE_PIN, GPIO.IN)
-	thread = Thread(target=record, name='recorder')
-	thread.start()
-	time.sleep(3)
+	record()
 	print(parse(RECEIVED_SIGNAL))
 
 if __name__ == '__main__':
