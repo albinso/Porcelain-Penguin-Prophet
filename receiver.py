@@ -5,9 +5,10 @@ import time
 
 RECEIVED_SIGNAL = []
 RECEIVE_PIN = 22
-EMPTY_RATE = datetime.timedelta(minutes=1)
+EMPTY_RATE = datetime.timedelta(seconds=5)
 codes = ['1010111011101010101010101', '1010111011101010101010111']
-
+THRESHOLD = 7
+TOP = 20
 last = 5
 def record():
     last = 5
@@ -15,15 +16,16 @@ def record():
     cumulative_time = 0
     while True:
 		signal = GPIO.input(RECEIVE_PIN)
-		if signal != last:
-			RECEIVED_SIGNAL.append(signal)
-			last = signal
+		RECEIVED_SIGNAL.append(signal)
 		cumulative_time = datetime.datetime.now() - beginning_time
 		if cumulative_time > EMPTY_RATE:
 			beginning_time = datetime.datetime.now()
+			break
 
 def parse(code):
-	ones = split_into_ones(code)
+	print(code)
+	ones = split_into_ones(str(code))
+	print(ones)
 	out = []
 	for group in ones:
 		out.append(interpret_ones(ones))
@@ -31,7 +33,7 @@ def parse(code):
 
 
 def split_into_ones(code):
-	return code.split(r'0+')
+	return code.split(r'0')
 
 def interpret_ones(code):
 	if len(code) > THRESHOLD:
@@ -43,7 +45,7 @@ def main():
 	GPIO.setup(RECEIVE_PIN, GPIO.IN)
 	thread = Thread(target=record, name='recorder')
 	thread.start()
-	time.sleep(10)
+	time.sleep(3)
 	print(parse(RECEIVED_SIGNAL))
 
 if __name__ == '__main__':
