@@ -22,8 +22,21 @@ def record():
 		if cumulative_time > EMPTY_RATE:
 			beginning_time = datetime.datetime.now()
 
-def parse():
-	pass
+def parse(code):
+	ones = split_into_ones(code)
+	out = []
+	for group in ones:
+		out.append(interpret_ones(ones))
+	return out
+
+
+def split_into_ones(code):
+	return code.split(r'0+')
+
+def interpret_ones(code):
+	if len(code) > THRESHOLD:
+		return 0
+	return 1
 
 def main():
 	GPIO.setmode(GPIO.BCM)
@@ -31,7 +44,7 @@ def main():
 	thread = Thread(target=record, name='recorder')
 	thread.start()
 	time.sleep(10)
-	print(RECEIVED_SIGNAL)
+	print(parse(RECEIVED_SIGNAL))
 
 if __name__ == '__main__':
 	main()
